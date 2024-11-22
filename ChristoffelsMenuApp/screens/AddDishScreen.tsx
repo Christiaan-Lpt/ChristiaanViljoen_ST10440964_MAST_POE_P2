@@ -1,76 +1,93 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ImageBackground } from 'react-native';
-import { StackNavigationProp } from '@react-navigation/stack';
-import { RouteProp } from '@react-navigation/native';
-
-type RootStackParamList = {
-    MenuScreen: undefined;
-    AddDishScreen: { setMenuItems: React.Dispatch<React.SetStateAction<MenuItem[]>>, setTotalItems: React.Dispatch<React.SetStateAction<number>> };
-};
-
-type AddDishScreenNavigationProp = StackNavigationProp<RootStackParamList, 'AddDishScreen'>;
-type AddDishScreenRouteProp = RouteProp<RootStackParamList, 'AddDishScreen'>;
-
-interface MenuItem {
-    name: string;
-    description: string;
-    course: string;
-    price: string;
-}
+import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 
 interface AddDishScreenProps {
-    navigation: AddDishScreenNavigationProp;
-    route: AddDishScreenRouteProp;
+    route: any;
+    navigation: any;
 }
 
-const AddDishScreen: React.FC<AddDishScreenProps> = ({ navigation, route }) => {
-    const { setMenuItems, setTotalItems } = route.params;
-    const [name, setName] = useState<string>('');
-    const [description, setDescription] = useState<string>('');
-    const [course, setCourse] = useState<string>('');
-    const [price, setPrice] = useState<string>('');
+const AddDishScreen: React.FC<AddDishScreenProps> = ({ route, navigation }) => {
+    const [name, setName] = useState('');
+    const [description, setDescription] = useState('');
+    const [course, setCourse] = useState('');
+    const [price, setPrice] = useState('');
 
     const addDish = () => {
-        const newDish: MenuItem = { name, description, course, price };
-        setMenuItems(prevItems => [...prevItems, newDish]);
-        setTotalItems(prevCount => prevCount + 1);
-        navigation.navigate('MenuScreen');
+        const newDish = {
+            name,
+            description,
+            course,
+            price,
+        };
+
+        // Update the menu items in the parent screen (MenuScreen)
+        route.params.setMenuItems((prevItems: any) => [...prevItems, newDish]);
+        navigation.goBack();  // Go back to the menu screen after adding the dish
     };
 
     return (
-        <ImageBackground source={require('../assets/Background.jpg')} style={styles.backgroundImage}>
-            <View style={styles.container}>
-                <Text style={styles.title}>Create a new dish</Text>
-                <TextInput placeholder="Enter a name" style={styles.input} onChangeText={setName} value={name} />
-                <TextInput placeholder="Enter Description" style={styles.input} onChangeText={setDescription} value={description} />
-                <TextInput placeholder="Courses" style={styles.input} onChangeText={setCourse} value={course} />
-                <TextInput placeholder="Enter Price" style={styles.input} keyboardType="numeric" onChangeText={setPrice} value={price} />
-                <TouchableOpacity onPress={addDish} style={styles.button}>
-                    <Text style={styles.buttonText}>ADD</Text>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => navigation.goBack()} style={styles.button}>
-                    <Text style={styles.buttonText}>Back</Text>
-                </TouchableOpacity>
-            </View>
-        </ImageBackground>
+        <View style={styles.container}>
+            <Text style={styles.title}>Add New Dish</Text>
+            <TextInput
+                style={styles.input}
+                placeholder="Dish Name"
+                value={name}
+                onChangeText={setName}
+            />
+            <TextInput
+                style={styles.input}
+                placeholder="Description"
+                value={description}
+                onChangeText={setDescription}
+            />
+            <TextInput
+                style={styles.input}
+                placeholder="Course (Starter/Main/Dessert)"
+                value={course}
+                onChangeText={setCourse}
+            />
+            <TextInput
+                style={styles.input}
+                placeholder="Price"
+                value={price}
+                onChangeText={setPrice}
+                keyboardType="numeric"
+            />
+            <TouchableOpacity onPress={addDish} style={styles.button}>
+                <Text style={styles.buttonText}>Add Dish</Text>
+            </TouchableOpacity>
+        </View>
     );
 };
 
 const styles = StyleSheet.create({
-    backgroundImage: {
+    container: {
         flex: 1,
-        resizeMode: 'cover',
-        justifyContent: 'center',
+        padding: 20,
     },
-    container: { 
-        flex: 1, 
-        padding: 20, 
-        backgroundColor: 'rgba(245, 245, 220, 0.7)',
+    title: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        marginBottom: 20,
     },
-    title: { fontSize: 24, fontWeight: 'bold' },
-    input: { borderWidth: 1, borderColor: '#000', padding: 8, marginVertical: 5 },
-    button: { backgroundColor: '#8FBC8F', padding: 10, marginTop: 10, alignItems: 'center' },
-    buttonText: { color: '#fff', fontWeight: 'bold' }
+    input: {
+        borderWidth: 1,
+        borderColor: '#ccc',
+        marginBottom: 15,
+        padding: 10,
+        borderRadius: 5,
+    },
+    button: {
+        backgroundColor: '#8FBC8F',
+        padding: 10,
+        marginTop: 10,
+        alignItems: 'center',
+        borderRadius: 5,
+    },
+    buttonText: {
+        color: '#fff',
+        fontWeight: 'bold',
+    },
 });
 
 export default AddDishScreen;
